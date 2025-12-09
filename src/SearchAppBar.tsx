@@ -1,11 +1,7 @@
+import { useState, useEffect } from 'react';
 import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
+import { AppBar, Box, Toolbar, Typography, InputBase, Badge } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { Badge } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 const Search = styled('div')(({ theme }) => ({
@@ -39,7 +35,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   width: '100%',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     [theme.breakpoints.up('sm')]: {
@@ -51,38 +46,52 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchAppBar({ quantity, price }: { quantity: number, price: number }) {
+interface SearchAppBarProps {
+  quantity: number;
+  price: number;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  onCartClick?: () => void;
+}
+
+export default function SearchAppBar({ quantity, price, searchQuery, onSearchChange, onCartClick }: SearchAppBarProps) {
+  const [localSearch, setLocalSearch] = useState(searchQuery);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onSearchChange(localSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [localSearch, onSearchChange]);
+
+  useEffect(() => {
+    setLocalSearch(searchQuery);
+  }, [searchQuery]);
+
   return (
     <Box>
-      <AppBar position="relative">
+      <AppBar position="static">
         <Toolbar>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}>
             TechHub
           </Typography>
           <Search>
             <SearchIconWrapper>
-              <SearchIcon/>
+              <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              value={localSearch}
+              onChange={(e) => setLocalSearch(e.target.value)}
             />
           </Search>
           <Box display="flex" flexDirection="row" mx={2}>
-            <Typography variant="h6" noWrap component="div" mr={2}>
-              Total:
-            </Typography>
-            <Typography variant="h6" noWrap component="div">
-              $ {(price || 0).toFixed(2)}
-            </Typography>
+            <Typography variant="h6" noWrap component="div" mr={2}>Total:</Typography>
+            <Typography variant="h6" noWrap component="div">$ {(price || 0).toFixed(2)}</Typography>
           </Box>
           <Badge badgeContent={quantity || 0} color="secondary">
-            <ShoppingCartIcon/>
+            <ShoppingCartIcon sx={{ cursor: 'pointer' }} onClick={onCartClick} />
           </Badge>
         </Toolbar>
       </AppBar>

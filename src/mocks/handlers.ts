@@ -15,14 +15,34 @@ function randomTechCategory() {
   return categories[Math.floor(Math.random() * categories.length)];
 }
 
+// Map categories to technology keywords for images
+function getTechImageKeyword(category: string): string {
+  const keywordMap: Record<string, string> = {
+    'Laptops': 'laptop',
+    'Smartphones': 'smartphone',
+    'Tablets': 'tablet',
+    'Accessories': 'technology',
+    'Audio': 'headphones',
+    'Gaming': 'gaming',
+    'Wearables': 'smartwatch',
+    'Cameras': 'camera',
+  };
+  return keywordMap[category] || 'technology';
+}
+
 // generate a rondom list of product with approriate library
-const products: Product[] = names.map((name, index) => ({
-  id: index,
-  name: name,
-  imageUrl: `https://via.placeholder.com/150?text=Product+${index}`,
-  price: parseFloat((Math.random() * 2970 + 29).toFixed(2)), // $29 - $2999
-  category: randomTechCategory(),
-}));
+const products: Product[] = names.map((name, index) => {
+  const category = randomTechCategory();
+  const keyword = getTechImageKeyword(category);
+  return {
+    id: index,
+    name: name,
+    // Using LoremFlickr for technology/gadget images with keywords (because i can not open the mockimages)
+    imageUrl: `https://loremflickr.com/300/300/${keyword}?lock=${index}`,
+    price: parseFloat((Math.random() * 2970 + 29).toFixed(2)), // $29 - $2999
+    category: category,
+  };
+});
 
 let cart: Record<number, number> = {};
 
@@ -79,7 +99,7 @@ export const handlers = [
     });
   }),
   http.post<never, { productId: number; quantity: number }>('/cart', async ({ request }) => {
-    await delay(1000);
+    await delay(100); // Уменьшена задержка для быстрой работы
     const { productId, quantity } = await request.json();
     const currentQuantity = cart[productId] || 0;
     cart[productId] = currentQuantity + quantity;

@@ -241,3 +241,24 @@ pnpm lint
 **Questions?** In a real scenario, you'd ask your team lead. For this assignment, document your assumptions and move forward.
 
 Good luck! 🚀
+
+
+-----Amirbek Makhabbat(Әмірбек Махаббат) 🚀
+
+## Completed Challenges
+- Product List with Infinite Scroll
+- Advanced Search & Filtering
+- Performance Optimization
+- Multi-Step Checkout Flow
+
+## Key Decisions
+- Used AbortController to cancel requests
+- Optimistic UI updates for cart
+
+## How to test
+1. npm install -g pnpm
+2. pnpm install
+3. pnpm run dev
+
+## Assumptions
+- API supports pagination
